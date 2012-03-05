@@ -37,6 +37,7 @@ class tomcat::logging {
     target => $operatingsystem ? {
       /Debian|Ubuntu/ => "/usr/share/java/log4j-1.2.jar",
       RedHat          => "/usr/share/java/log4j.jar",
+      CentOS          => "/usr/share/java/log4j.jar",
     },
   }
 

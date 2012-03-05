@@ -28,7 +28,7 @@ class tomcat::source inherits tomcat::base {
   include tomcat::params
 
   case $operatingsystem {
-    RedHat: {
+    RedHat,CentOS: {
       package { ["log4j", "jakarta-commons-logging"]: ensure => present }
     }
     Debian,Ubuntu: {
@@ -38,13 +38,12 @@ class tomcat::source inherits tomcat::base {
 
   $tomcat_home = "/opt/apache-tomcat-${tomcat::params::version}"
 
+
   if $tomcat::params::maj_version == "6" {
     # install extra tomcat juli adapters, used to configure logging.
-    include tomcat::juli
+    # include tomcat::juli
   }
 
-  # link logging libraries from java
-  include tomcat::logging
 
   $baseurl = $tomcat::params::maj_version ? {
     "5.5" => "${tomcat::params::mirror}/tomcat-5/v${tomcat::params::version}/bin",
@@ -52,9 +51,12 @@ class tomcat::source inherits tomcat::base {
   }
   
   $tomcaturl = "${baseurl}/apache-tomcat-${tomcat::params::version}.tar.gz"
+  
+  # link logging libraries from java
+  include tomcat::logging
 
   archive{ "apache-tomcat-${tomcat::params::version}":
-    url         => $tomcaturl,
+    url         => "$tomcaturl",
     digest_url  => "${tomcaturl}.md5",
     digest_type => "md5",
     target      => "/opt",

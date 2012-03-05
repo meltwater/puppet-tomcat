@@ -122,7 +122,6 @@ define tomcat::instance($ensure="present",
       ""      => 2570,
       default => $conf_mode
     }
-
   } else {
     $dirmode  = $webapp_mode ? {
       ""      => 2775,
@@ -134,6 +133,8 @@ define tomcat::instance($ensure="present",
       default => $conf_mode
     }
   }
+    
+  $runtime_user = $owner
 
   if $connector == [] and $server_xml_file == "" {
     
@@ -220,7 +221,7 @@ define tomcat::instance($ensure="present",
   # Define default JAVA_HOME used in tomcat.init.erb
   if $java_home == "" {
     case $operatingsystem {
-      RedHat: {
+      RedHat,CentOS: {
         $javahome = "/usr/lib/jvm/java"
       }
       Debian,Ubuntu: {

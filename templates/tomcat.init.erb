@@ -14,11 +14,16 @@ export CATALINA_BASE=<%= basedir %>
 export CATALINA_PID=<%= basedir %>/temp/tomcat.pid
 
 # For SELinux we need to use 'runuser' not 'su'
-if [ -x "/sbin/runuser" ]; then
-    SU="/sbin/runuser"
+# if [ -x "/sbin/runuser" ]; then
+#     SU="/sbin/runuser"
+# else
+if [ "$( whoami )" != "<%= runtime_user %>" ]; then
+    SU="su <%= runtime_user %> -c"
 else
-    SU="su"
+    SU=""
 fi
+
+# fi
 
 start() {
   isrunning
@@ -38,7 +43,13 @@ start() {
   # Remove pidfile if still around
   test -f $CATALINA_PID && rm -f $CATALINA_PID
 
-  $SU tomcat -c "umask 0002; $CATALINA_HOME/bin/catalina.sh start" > /dev/null
+  COMMAND="$CATALINA_HOME/bin/catalina.sh start" 
+  if [ "$SU" != "" ]; then
+      $SU "umask 0002; $COMMAND" > /dev/null
+  else
+      umask 0002
+      $COMMAND >/dev/null
+  fi
 }
 
 stop() {
@@ -54,7 +65,13 @@ stop() {
 
   count=0
   until [ "$pid" = "" ] || [ $count -gt $SHUTDOWN_WAIT ]; do
-    $SU tomcat -c "$CATALINA_HOME/bin/catalina.sh stop -force" > /dev/null
+    COMMAND="$CATALINA_HOME/bin/catalina.sh stop -force" 
+    if [ "$SU" != "" ]; then
+      $SU "$COMMAND" > /dev/null
+    else
+      $COMMAND >/dev/null
+    fi
+      
     findpid
 
     echo -n "."
@@ -75,7 +92,7 @@ stop() {
 
 findpid() {
   pid=""
-  pid=$(pgrep -U tomcat -f "^$JAVA_HOME/bin/java.*catalina.base=<%= basedir %>")
+  pid=$(pgrep -U <%= runtime_user %> -f "^$JAVA_HOME/bin/java.*catalina.base=<%= basedir %>")
 
   # validate output of pgrep
   if ! [ "$pid" = "" ] && ! [ "$pid" -gt 0 ]; then
