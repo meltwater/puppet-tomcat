@@ -29,8 +29,8 @@ export JAVA_OPTS="-Dsun.java2d.opengl=${DSUN_JAVA2D_OPENGL} \
                   -Djava.awt.headless=${DJAVA_AWT_HEADLESS} \
                   -Djavax.servlet.request.encoding=UTF-8 \
 		  -Dfile.encoding=UTF-8 \
-		  -Xmx2g \
-		  -XX:MaxPermSize=256m \
+		  -Xmx${JAVA_XMX} \
+		  -XX:MaxPermSize=${JAVA_XX_MAXPERMSIZE} \
 		  -XX:+UseConcMarkSweepGC \
 		  -XX:+UseParNewGC \
 		  -XX:+CMSClassUnloadingEnabled \
