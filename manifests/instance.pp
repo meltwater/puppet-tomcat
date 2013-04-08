@@ -105,12 +105,13 @@ define tomcat::instance($ensure="present",
                         $setenv=[],
                         $connector=[],
                         $executor=[],
-                        $manage=false) {
+                        $manage=false,
+                        $basedir="${tomcat::params::instance_basedir}") {
 
   include tomcat::params
   
   $tomcat_name = $name
-  $basedir = "${tomcat::params::instance_basedir}/${name}"
+  $basedir = "${basedir}/${name}"
 
   if $owner == "tomcat" {
     $dirmode  = $webapp_mode ? {
