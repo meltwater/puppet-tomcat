@@ -62,7 +62,7 @@ define tomcat::connector($ensure="present",
                          $scheme=false,
                          $executor=false,
                          $options=[],
-                         $manage=false
+                         $manage=false,
                          $install_dir="${tomcat::params::instance_basedir}/${instance}") {
 
   include tomcat::params
