@@ -111,7 +111,7 @@ define tomcat::instance($ensure="present",
   include tomcat::params
   
   $tomcat_name = $name
-  $basedir = "${basedir}/${name}"
+  $install_dir = "${basedir}/${name}"
 
   if $owner == "tomcat" {
     $dirmode  = $webapp_mode ? {
@@ -173,10 +173,10 @@ define tomcat::instance($ensure="present",
     $connectors = $connector
   }
 
-  if defined(File["${tomcat::params::instance_basedir}"]) {
-    debug "File[${tomcat::params::instance_basedir}] already defined"
+  if defined(File["${install_dir}"]) {
+    debug "File[${install_dir}] already defined"
   } else {
-    file {"${tomcat::params::instance_basedir}":
+    file {"${install_dir}":
       ensure => directory,
     }
   }
@@ -241,7 +241,7 @@ define tomcat::instance($ensure="present",
     present,installed,running,stopped: {
       file {
         # Nobody usually write there
-        "${basedir}":
+        "${install_dir}":
           ensure => directory,
           owner  => $owner,
           group  => $group,
@@ -252,7 +252,7 @@ define tomcat::instance($ensure="present",
             default => Group[$group],
           };
     
-        "${basedir}/bin":
+        "${install_dir}/bin":
           ensure => directory,
           owner  => "root",
           group  => $group,
@@ -260,28 +260,28 @@ define tomcat::instance($ensure="present",
           before => Service["tomcat-${name}"];
     
         # Developpers usually write there
-        "${basedir}/conf":
+        "${install_dir}/conf":
           ensure => directory,
           owner  => $owner,
           group  => $group,
           mode   => $confmode,
           before => Service["tomcat-${name}"];
 
-        "${basedir}/lib":
+        "${install_dir}/lib":
           ensure => directory,
           owner  => "root",
           group  => $group,
           mode   => 2775,
           before => Service["tomcat-${name}"];
 
-        "${basedir}/private":
+        "${install_dir}/private":
           ensure => directory,
           owner  => "root",
           group  => $group,
           mode   => 2775,
           before => Service["tomcat-${name}"];
 
-        "${basedir}/conf/server.xml":
+        "${install_dir}/conf/server.xml":
           ensure  => present,
           owner   => $owner,
           group   => $group,
@@ -305,7 +305,7 @@ define tomcat::instance($ensure="present",
           },
           replace => $manage;
 
-        "${basedir}/conf/web.xml":
+        "${install_dir}/conf/web.xml":
           ensure  => present,
           owner   => $owner,
           group   => $group,
@@ -325,14 +325,14 @@ define tomcat::instance($ensure="present",
           },
           replace => $manage;
 
-        "${basedir}/README":
+        "${install_dir}/README":
           ensure  => present,
           owner   => "root",
           group   => "root",
           mode    => 644,
           content => template("tomcat/README.erb");
 
-        "${basedir}/webapps":
+        "${install_dir}/webapps":
           ensure => directory,
           owner  => $owner,
           group  => $group,
@@ -340,19 +340,19 @@ define tomcat::instance($ensure="present",
           before => Service["tomcat-${name}"];
     
         # Tomcat usually write there
-        "${basedir}/logs":
+        "${install_dir}/logs":
           ensure => directory,
           owner  => "tomcat",
           group  => $group,
           mode   => 2770,
           before => Service["tomcat-${name}"];
-        "${basedir}/work":
+        "${install_dir}/work":
           ensure => directory,
           owner  => "tomcat",
           group  => $group,
           mode   => 2770,
           before => Service["tomcat-${name}"];
-        "${basedir}/temp":
+        "${install_dir}/temp":
           ensure => directory,
           owner  => "tomcat",
           group  => $group,
@@ -365,19 +365,19 @@ define tomcat::instance($ensure="present",
         # Deploy a sample "Hello World" webapp available at:
         # http://localhost:8080/sample/
         #
-        file { "${basedir}/webapps/sample.war":
+        file { "${install_dir}/webapps/sample.war":
           ensure  => present,
           owner   => "tomcat",
           group   => $group,
           mode    => 0460,
           source  => "puppet:///modules/tomcat/sample.war",
-          require => File["${basedir}/webapps"],
+          require => File["${install_dir}/webapps"],
           before => Service["tomcat-${name}"],
         }
       }
     }
     absent: {
-      file {$basedir:
+      file {$install_dir:
         ensure  => absent,
         recurse => true,
         force   => true,
@@ -395,7 +395,7 @@ define tomcat::instance($ensure="present",
 
 
   # Default JVM options
-  file {"${basedir}/bin/setenv.sh":
+  file {"${install_dir}/bin/setenv.sh":
     ensure  => $present,
     content => template("tomcat/setenv.sh.erb"),
     owner  => "root",
@@ -405,7 +405,7 @@ define tomcat::instance($ensure="present",
   }
 
   # User customized JVM options
-  file {"${basedir}/bin/setenv-local.sh":
+  file {"${install_dir}/bin/setenv-local.sh":
     ensure  => $present,
     replace => false,
     content => template("tomcat/setenv-local.sh.erb"),
@@ -422,7 +422,7 @@ define tomcat::instance($ensure="present",
     content => template("tomcat/tomcat.init.erb"),
     owner   => "root",
     mode    => "755",
-    require => File["${basedir}/bin/setenv.sh"],
+    require => File["${install_dir}/bin/setenv.sh"],
   }
 
   if $tomcat::params::type == "package" {
@@ -447,7 +447,7 @@ define tomcat::instance($ensure="present",
       absent    => false,
     },
     require => [File["/etc/init.d/tomcat-${name}"], $servicerequire],
-    pattern => "-Dcatalina.base=${tomcat::params::instance_basedir}/${name}",
+    pattern => "-Dcatalina.base=${install_dir}/${name}",
   }
 
   # Logrotate
