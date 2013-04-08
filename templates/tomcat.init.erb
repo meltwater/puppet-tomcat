@@ -10,8 +10,8 @@ SHUTDOWN_WAIT=30
 
 export JAVA_HOME=<%= javahome %>
 export CATALINA_HOME=<%= catalinahome %>
-export CATALINA_BASE=<%= basedir %>
-export CATALINA_PID=<%= basedir %>/temp/tomcat.pid
+export CATALINA_BASE=<%= install_dir %>
+export CATALINA_PID=<%= install_dir %>/temp/tomcat.pid
 
 # For SELinux we need to use 'runuser' not 'su'
 # if [ -x "/sbin/runuser" ]; then
@@ -34,10 +34,10 @@ start() {
   fi
 
   # Change directory to prevent path problems
-  cd <%= basedir %>
+  cd <%= install_dir %>
 <% if tomcat_version_str == '5.5_package' -%>
   # Source JVM parameters
-  test -r <%= basedir %>/bin/setenv.sh && . <%= basedir %>/bin/setenv.sh
+  test -r <%= install_dir %>/bin/setenv.sh && . <%= install_dir %>/bin/setenv.sh
 <% end -%>
 
   # Remove pidfile if still around
@@ -92,7 +92,7 @@ stop() {
 
 findpid() {
   pid=""
-  pid=$(pgrep -U <%= runtime_user %> -f "^$JAVA_HOME/bin/java.*catalina.base=<%= basedir %>")
+  pid=$(pgrep -U <%= runtime_user %> -f "^$JAVA_HOME/bin/java.*catalina.base=<%= install_dir %>")
 
   # validate output of pgrep
   if ! [ "$pid" = "" ] && ! [ "$pid" -gt 0 ]; then

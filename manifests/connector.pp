@@ -62,7 +62,8 @@ define tomcat::connector($ensure="present",
                          $scheme=false,
                          $executor=false,
                          $options=[],
-                         $manage=false) {
+                         $manage=false
+                         $install_dir="${tomcat::params::instance_basedir}/${instance}") {
 
   include tomcat::params
 
@@ -72,7 +73,7 @@ define tomcat::connector($ensure="present",
     $filemode = 0664
   }
 
-  file {"${tomcat::params::instance_basedir}/${instance}/conf/connector-${name}.xml":
+  file {"${install_dir}/conf/connector-${name}.xml":
     ensure  => $ensure,
     owner   => $owner,
     group   => $group,
