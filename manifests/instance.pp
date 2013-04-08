@@ -173,14 +173,6 @@ define tomcat::instance($ensure="present",
     $connectors = $connector
   }
 
-  if defined(File["${install_dir}"]) {
-    debug "File[${install_dir}] already defined"
-  } else {
-    file {"${install_dir}":
-      ensure => directory,
-    }
-  }
-
   if $tomcat::params::type == "package" and $lsbdistcodename == "Santiago" {
     # force catalina.sh to use the common library in CATALINA_HOME and not CATALINA_BASE
     $classpath = "/usr/share/tomcat6/bin/tomcat-juli.jar" 
