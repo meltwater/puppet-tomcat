@@ -336,19 +336,19 @@ define tomcat::instance($ensure="present",
         # Tomcat usually write there
         "${install_dir}/logs":
           ensure => directory,
-          owner  => "tomcat",
+          owner  => $owner,
           group  => $group,
           mode   => 2770,
           before => Service["tomcat-${name}"];
         "${install_dir}/work":
           ensure => directory,
-          owner  => "tomcat",
+          owner  => $owner,
           group  => $group,
           mode   => 2770,
           before => Service["tomcat-${name}"];
         "${install_dir}/temp":
           ensure => directory,
-          owner  => "tomcat",
+          owner  => $owner,
           group  => $group,
           mode   => 2770,
           before => Service["tomcat-${name}"];
