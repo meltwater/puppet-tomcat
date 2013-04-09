@@ -1,0 +1,7 @@
+* text eol=lf
+*.rb text
+*.cfg text
+*.pp text
+*.erb text
+*.sh* text
+*.tomcat.erb text
