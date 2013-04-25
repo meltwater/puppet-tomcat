@@ -2,7 +2,7 @@ class tomcat::params {
 
   
   if defined(Class["Tomcat::source"]) {
-    $tomcat_home = '/opt/apache-tomcat-${tomcat::params::version}'
+    $tomcat_home = "/opt/apache-tomcat-${tomcat::params::version}"
   } else {
     case $operatingsystem {
       RedHat       : { $tomcat_home = '/var/lib/tomcat5' }
