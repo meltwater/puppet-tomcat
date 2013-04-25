@@ -1,5 +1,15 @@
 class tomcat::params {
 
+  
+  if defined(Class["Tomcat::source"]) {
+    $tomcat_home = '/opt/apache-tomcat-${tomcat::params::version}'
+  } else {
+    case $operatingsystem {
+      RedHat       : { $tomcat_home = '/var/lib/tomcat5' }
+      Debian,Ubuntu: { $tomcat_home = '/usr/share/tomcat6' }
+    }
+  }
+
   $default_source_release = "6.0.26"
   $default_source_release_v55 = "5.5.27"
 

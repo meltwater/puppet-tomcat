@@ -11,14 +11,7 @@ This class is just there to avoid code duplication. It probably doesn't make
 any sense to include it directly.
 
 */
-class tomcat::logging {
-
-  include tomcat::params
-
-  case $operatingsystem {
-    RedHat       : { $tomcat_home = $tomcat::redhat::tomcat_home }
-    Debian,Ubuntu: { $tomcat_home = $tomcat::debian::tomcat_home }
-  }
+class tomcat::logging inherits tomcat::params {
 
   if ( ! $tomcat_home ) {
     err('undefined mandatory attribute: $tomcat_home')
