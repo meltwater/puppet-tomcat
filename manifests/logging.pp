@@ -15,9 +15,19 @@ class tomcat::logging {
 
   include tomcat::params
 
+  if ( $tomcat::redhat::tomcat_home ) {
+    $tomcat_home = $tomcat::redhat::tomcat_home
+  }
+  if ( $tomcat::debian::tomcat_home ) {
+    $tomcat_home = $tomcat::debian::tomcat_home
+  }
+  if ( $tomcat::source::tomcat_home ) {
+    $tomcat_home = $tomcat::source::tomcat_home
+  }
   if ( ! $tomcat_home ) {
     err('undefined mandatory attribute: $tomcat_home')
   }
+
 
   file {"commons-logging.jar":
     path   => $tomcat::params::maj_version ? {
