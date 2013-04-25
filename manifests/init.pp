@@ -10,7 +10,7 @@ Example usage:
 
 */
 class tomcat {
-  $tomcat::tomcat_home = ''
+  $tomcat_home = ''
 
   case $operatingsystem {
     RedHat       : { include tomcat::redhat }
