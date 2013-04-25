@@ -22,7 +22,7 @@ class tomcat::debian inherits tomcat::package {
   }
 
   $tomcat = "tomcat6"
-  $tomcat::tomcat_home = "/usr/share/tomcat6"
+  $tomcat_home = "/usr/share/tomcat6"
 
   # Workaround while tomcat-juli.jar and tomcat-juli-adapters.jar aren't
   # included in tomcat6-* packages.
@@ -42,7 +42,7 @@ class tomcat::debian inherits tomcat::package {
   }
 
   File["/usr/share/tomcat"] {
-    path => $tomcat::tomcat_home,
+    path => $tomcat_home,
   }
 
   File["/etc/init.d/tomcat"] {
