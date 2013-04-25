@@ -10,6 +10,8 @@ Example usage:
 
 */
 class tomcat {
+  $tomcat::tomcat_home = ''
+
   case $operatingsystem {
     RedHat       : { include tomcat::redhat }
     Debian,Ubuntu: { include tomcat::debian }

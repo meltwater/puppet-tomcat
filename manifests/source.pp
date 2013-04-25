@@ -36,7 +36,7 @@ class tomcat::source inherits tomcat::base {
     }
   }
 
-  $tomcat_home = "/opt/apache-tomcat-${tomcat::params::version}"
+  $tomcat::tomcat_home = "/opt/apache-tomcat-${tomcat::params::version}"
 
 
   if $tomcat::params::maj_version == "6" {
@@ -64,12 +64,12 @@ class tomcat::source inherits tomcat::base {
 
   file {"/opt/apache-tomcat":
     ensure  => link,
-    target  => $tomcat_home,
+    target  => $tomcat::tomcat_home,
     require => Archive["apache-tomcat-${tomcat::params::version}"],
     before  => [File["commons-logging.jar"], File["log4j.jar"], File["log4j.properties"]],
   }
 
-  file { $tomcat_home:
+  file { $tomcat::tomcat_home:
     ensure  => directory,
     require => Archive["apache-tomcat-${tomcat::params::version}"],
   }
@@ -78,7 +78,7 @@ class tomcat::source inherits tomcat::base {
   case $tomcat::params::version {
     "6.0.18": {
       # Fix https://issues.apache.org/bugzilla/show_bug.cgi?id=45585
-      file {"${tomcat_home}/bin/catalina.sh":
+      file {"${tomcat::tomcat_home}/bin/catalina.sh":
         ensure  => present,
         source  => "puppet:///modules/tomcat/catalina.sh-6.0.18",
         require => Archive["apache-tomcat-${tomcat::params::version}"],
