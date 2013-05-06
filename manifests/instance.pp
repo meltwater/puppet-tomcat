@@ -396,18 +396,6 @@ define tomcat::instance($ensure="present",
     before => Service["tomcat-${name}"],
   }
 
-  # User customized JVM options
-  file {"${install_dir}/bin/setenv-local.sh":
-    ensure  => $present,
-    replace => false,
-    content => template("tomcat/setenv-local.sh.erb"),
-    owner  => "root",
-    group  => $group,
-    mode   => '0574',
-    before => Service["tomcat-${name}"],
-  }
-
-
   # Init and env scripts
   file {"/etc/init.d/tomcat-${name}":
     ensure  => $present,
