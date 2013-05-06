@@ -23,7 +23,10 @@ export JAVA_XX_MAXPERMSIZE="256m"
 export <%= env -%>
 <% end %>
 
-. $CATALINA_BASE/bin/setenv-local.sh
+SETENV_LOCAL="$CATALINA_BASE/bin/setenv-local.sh"
+if [ -e $SETENV_LOCAL ]; then
+    . $SETENV_LOCAL
+fi
 
 export JAVA_OPTS="-Dsun.java2d.opengl=${DSUN_JAVA2D_OPENGL} \
                   -Djava.awt.headless=${DJAVA_AWT_HEADLESS} \
