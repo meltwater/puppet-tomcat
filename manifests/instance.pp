@@ -251,7 +251,7 @@ define tomcat::instance($ensure="present",
           ensure => directory,
           owner  => "root",
           group  => $group,
-          mode   => 755,
+          mode   => '0755',
           before => Service["tomcat-${name}"];
     
         # Developpers usually write there
@@ -266,14 +266,14 @@ define tomcat::instance($ensure="present",
           ensure => directory,
           owner  => "root",
           group  => $group,
-          mode   => 2775,
+          mode   => '2775',
           before => Service["tomcat-${name}"];
 
         "${install_dir}/private":
           ensure => directory,
           owner  => "root",
           group  => $group,
-          mode   => 2775,
+          mode   => '2775',
           before => Service["tomcat-${name}"];
 
         "${install_dir}/conf/server.xml":
