@@ -106,7 +106,7 @@ define tomcat::instance($ensure="present",
                         $connector=[],
                         $executor=[],
                         $manage=false,
-                        $basedir="${tomcat::params::instance_basedir}") {
+                        $basedir=$tomcat::params::instance_basedir) {
 
   include tomcat::params
   
@@ -141,11 +141,13 @@ define tomcat::instance($ensure="present",
     
     $connectors = ["http-${http_port}-${name}","ajp-${ajp_port}-${name}"]
     
-    tomcat::connector{"http-${http_port}-${name}":
-      ensure   => $ensure ? {
+    tc_ensure = $ensure ? {
         "absent" => absent,
         default  => present,
-      },
+    }
+    
+    tomcat::connector{"http-${http_port}-${name}":
+      ensure   => $tc_ensure,
       instance => $name,
       protocol => "HTTP/1.1",
       port     => $http_port,
@@ -157,10 +159,7 @@ define tomcat::instance($ensure="present",
     }
 
     tomcat::connector{"ajp-${ajp_port}-${name}":
-      ensure   => $ensure ? {
-        "absent" => absent,
-        default  => present,
-      },
+      ensure   => $tc_ensure,
       instance => $name,
       protocol => "AJP/1.3",
       port     => $ajp_port,
@@ -175,7 +174,7 @@ define tomcat::instance($ensure="present",
     $connectors = $connector
   }
 
-  if $tomcat::params::type == "package" and $lsbdistcodename == "Santiago" {
+  if $tomcat::params::type == "package" and $::lsbdistcodename == "Santiago" {
     # force catalina.sh to use the common library in CATALINA_HOME and not CATALINA_BASE
     $classpath = "/usr/share/tomcat6/bin/tomcat-juli.jar" 
   }
@@ -190,7 +189,7 @@ define tomcat::instance($ensure="present",
   }
 
   if $tomcat::params::maj_version == "5.5" and $tomcat::params::type == "package" {
-    $catalinahome = $operatingsystem ? {
+    $catalinahome = $::operatingsystem ? {
       RedHat => "/usr/share/tomcat5",
       Debian => "/usr/share/tomcat5.5",
       Ubuntu => "/usr/share/tomcat5.5",
@@ -198,7 +197,7 @@ define tomcat::instance($ensure="present",
   }
 
   if $tomcat::params::maj_version == "6" and $tomcat::params::type == "package" {
-    $catalinahome = $operatingsystem ? {
+    $catalinahome = $::operatingsystem ? {
       RedHat => "/usr/share/tomcat6",
       Debian => "/usr/share/tomcat6",
       Ubuntu => "/usr/share/tomcat6",
@@ -215,7 +214,7 @@ define tomcat::instance($ensure="present",
 
   # Define default JAVA_HOME used in tomcat.init.erb
   if $java_home == "" {
-    case $operatingsystem {
+    case $::operatingsystem {
       RedHat,CentOS: {
         $javahome = "/usr/lib/jvm/java"
       }
@@ -223,7 +222,7 @@ define tomcat::instance($ensure="present",
         $javahome = "/usr"
       }
       default: {
-        err("java_home not defined for '${operatingsystem}'.")
+        err("java_home not defined for '${::operatingsystem}'.")
       }
     }
   } else {
@@ -231,20 +230,22 @@ define tomcat::instance($ensure="present",
   }
 
   # Instance directories
+  $install_dir_group = $group ? {
+            "adm"   => undef,
+            default => Group[$group],
+  };
+  
   case $ensure {
     present,installed,running,stopped: {
       file {
         # Nobody usually write there
-        "${install_dir}":
+        $install_dir:
           ensure => directory,
           owner  => $owner,
           group  => $group,
-          mode   => 0555,
+          mode   => '0555',
           before => Service["tomcat-${name}"],
-          require => $group ? {
-            "adm"   => undef,
-            default => Group[$group],
-          };
+          require => $install_dir_group;
     
         "${install_dir}/bin":
           ensure => directory,
@@ -363,7 +364,7 @@ define tomcat::instance($ensure="present",
           ensure  => present,
           owner   => "tomcat",
           group   => $group,
-          mode    => 0460,
+          mode    => '0460',
           source  => "puppet:///modules/tomcat/sample.war",
           require => File["${install_dir}/webapps"],
           before => Service["tomcat-${name}"],
@@ -394,7 +395,7 @@ define tomcat::instance($ensure="present",
     content => template("tomcat/setenv.sh.erb"),
     owner  => "root",
     group  => $group,
-    mode   => 754,
+    mode   => '0754',
     before => Service["tomcat-${name}"],
   }
 
@@ -405,7 +406,7 @@ define tomcat::instance($ensure="present",
     content => template("tomcat/setenv-local.sh.erb"),
     owner  => "root",
     group  => $group,
-    mode   => 574,
+    mode   => '0574',
     before => Service["tomcat-${name}"],
   }
 
@@ -415,7 +416,7 @@ define tomcat::instance($ensure="present",
     ensure  => $present,
     content => template("tomcat/tomcat.init.erb"),
     owner   => "root",
-    mode    => "755",
+    mode    => "0755",
     require => File["${install_dir}/bin/setenv.sh"],
   }
 
