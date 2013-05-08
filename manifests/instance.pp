@@ -233,7 +233,7 @@ define tomcat::instance($ensure="present",
   $install_dir_group = $group ? {
             "adm"   => undef,
             default => Group[$group],
-  };
+  }
   
   case $ensure {
     present,installed,running,stopped: {
