@@ -1,21 +1,18 @@
-/*
-
-== Definition: tomcat::ulimit
-
-Helper definition which helps allocate more/less resources to the tomcat user,
-using PAM. See limits.conf(5) and pam_limits(8) for more details.
-
-Parameters:
-
-- *name*: the name of the limit to change (instance name).
-- *value*: the value to set for this limit.
-
-Example usage:
-
-  include tomcat::package::v6
-
-  tomcat::ulimit { "nofile": value => 16384 }
-*/
+# == Definition: tomcat::ulimit
+# 
+# Helper definition which helps allocate more/less resources to the tomcat user,
+# using PAM. See limits.conf(5) and pam_limits(8) for more details.
+# 
+# Parameters:
+# 
+# - *name*: the name of the limit to change (instance name).
+# - *value*: the value to set for this limit.
+# 
+# Example usage:
+# 
+#   include tomcat::package::v6
+# 
+#   tomcat::ulimit { "nofile": value => 16384 }
 define tomcat::ulimit ($value) {
 
   augeas { "set tomcat $name ulimit":
