@@ -141,7 +141,7 @@ define tomcat::instance($ensure="present",
     
     $connectors = ["http-${http_port}-${name}","ajp-${ajp_port}-${name}"]
     
-    tc_ensure = $ensure ? {
+    $tc_ensure = $ensure ? {
         "absent" => absent,
         default  => present,
     }
