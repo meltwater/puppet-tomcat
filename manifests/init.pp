@@ -8,7 +8,7 @@
 # 
 class tomcat {
   case $operatingsystem {
-    RedHat       : { include tomcat::redhat }
+    RedHat,CentOS: { include tomcat::redhat }
     Debian,Ubuntu: { include tomcat::debian }
     default      : { fail "Unsupported operatingsystem ${operatingsystem}" }
   }
