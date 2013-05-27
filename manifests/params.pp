@@ -31,7 +31,7 @@ class tomcat::params {
   } else {
     $type = "package"
     if $::tomcat_version { notify {"\$::tomcat_version is not useful when using distribution package!":} }
-    $maj_version = $operatingsystem ? {
+    $maj_version = $::operatingsystem ? {
       "Debian" => $lsbdistcodename ? {
         /lenny|squeeze/ => "6",
       },
@@ -56,7 +56,7 @@ class tomcat::params {
   if defined(Class["Tomcat::source"]) {
     $tomcat_home = "/opt/apache-tomcat-${version}"
   } else {
-    case $operatingsystem {
+    case $::operatingsystem {
       RedHat       : { $tomcat_home = '/var/lib/tomcat5' }
       Debian,Ubuntu: { $tomcat_home = '/usr/share/tomcat6' }
     }
