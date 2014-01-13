@@ -81,16 +81,6 @@ class tomcat::source($tomcat_version = "6.0.26") inherits tomcat::base {
         mode => "755",
       }
     }
-
-    "7.0.50": {
-      # Fix https://issues.apache.org/bugzilla/show_bug.cgi?id=45585
-      file {"${tomcat_home}/bin/catalina.sh":
-        ensure  => present,
-        source  => "puppet:///modules/tomcat/catalina.sh-7.0.50",
-        require => Archive["apache-tomcat-${tomcat::params::version}"],
-        mode => "755",
-      }
-    }
   }
 
 }
