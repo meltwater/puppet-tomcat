@@ -1,6 +1,6 @@
 # == Class: tomcat::source
 # 
-# Installs tomcat 5.5.X or 6.0.X using the compressed archive from your favorite tomcat
+# Installs tomcat 5.5.X, 6.0.X or 7.0.X using the compressed archive from your favorite tomcat
 # mirror. Files from the archive will be installed in /opt/apache-tomcat/.
 # 
 # Class variables:
@@ -17,10 +17,9 @@
 # - Ubuntu Lucid
 # 
 # Usage:
-#   $tomcat_version = "6.0.18"
-#   include tomcat::source
-# 
-class tomcat::source inherits tomcat::base {
+#   class { 'tomcat::source': tomcat_version => "7.0.50" }
+#
+class tomcat::source($tomcat_version = "6.0.18") inherits tomcat::base {
 
   include tomcat::params
 
@@ -43,8 +42,8 @@ class tomcat::source inherits tomcat::base {
 
 
   $baseurl = $tomcat::params::maj_version ? {
-    "5.5" => "${tomcat::params::mirror}/tomcat-5/v${tomcat::params::version}/bin",
-    "6"   => "${tomcat::params::mirror}/tomcat-6/v${tomcat::params::version}/bin",
+    "5.5"   => "${tomcat::params::mirror}/tomcat-5/v${tomcat::params::version}/bin",
+    default => "${tomcat::params::mirror}/tomcat-${tomcat::params::maj_version}/v${tomcat::params::version}/bin",
   }
   
   $tomcaturl = "${baseurl}/apache-tomcat-${tomcat::params::version}.tar.gz"
@@ -78,6 +77,16 @@ class tomcat::source inherits tomcat::base {
       file {"${tomcat_home}/bin/catalina.sh":
         ensure  => present,
         source  => "puppet:///modules/tomcat/catalina.sh-6.0.18",
+        require => Archive["apache-tomcat-${tomcat::params::version}"],
+        mode => "755",
+      }
+    }
+
+    "7.0.50": {
+      # Fix https://issues.apache.org/bugzilla/show_bug.cgi?id=45585
+      file {"${tomcat_home}/bin/catalina.sh":
+        ensure  => present,
+        source  => "puppet:///modules/tomcat/catalina.sh-7.0.50",
         require => Archive["apache-tomcat-${tomcat::params::version}"],
         mode => "755",
       }

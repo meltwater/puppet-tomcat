@@ -2,6 +2,7 @@ class tomcat::params {
 
   $default_source_release = "6.0.26"
   $default_source_release_v55 = "5.5.27"
+  $default_source_release_v7 = "7.0.50"
 
   $instance_basedir = "/srv/tomcat"
 
@@ -13,24 +14,27 @@ class tomcat::params {
 
   if defined(Class["Tomcat::source"]) {
     $type = "source"
-    if ( ! $::tomcat_version ) {
+    if ( ! $tomcat::source::tomcat_version ) {
       $maj_version = "6"
       $version = $default_source_release
     } else {
-      $version = $::tomcat_version
-      if versioncmp($::tomcat_version, '6.0.0') >= 0 {
+      $version = $tomcat::source::tomcat_version
+      if versioncmp($tomcat::source::tomcat_version, '7.0.0') >= 0 {
+        $maj_version = "7"
+      }
+      elsif versioncmp($tomcat::source::tomcat_version, '6.0.0') >= 0 {
         $maj_version = "6"
-      } else {
-        if versioncmp($::tomcat_version, '5.5.0') >= 0 {
-          $maj_version = "5.5"
-        } else {
-          fail "only versions >= 5.5 or >= 6.0 are supported !"
-        }
+      }
+      elsif versioncmp($tomcat::source::tomcat_version, '5.5.0') >= 0 {
+        $maj_version = "5.5"
+      }
+      else {
+        fail "only versions >= 5.5 or >= 6.0 are supported !"
       }
     }
   } else {
     $type = "package"
-    if $::tomcat_version { notify {"\$::tomcat_version is not useful when using distribution package!":} }
+    if $tomcat::source::tomcat_version { notify {"\$tomcat::source::tomcat_version is not useful when using distribution package!":} }
     $maj_version = $::operatingsystem ? {
       "Debian" => $lsbdistcodename ? {
         /lenny|squeeze/ => "6",
