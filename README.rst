@@ -88,8 +88,9 @@ Create a standalone tomcat instance whose HTTP server listen on port 8080::
 If you want to install a specific tomcat version from a specific mirror::
 
   $tomcat_mirror = "http://archive.apache.org/dist/tomcat/"
-  $tomcat_version = "6.0.32"
-  include tomcat::source
+  class { 'tomcat::source':
+    tomcat_version => "7.0.50"
+  }
 
 Apache integration
 ------------------
