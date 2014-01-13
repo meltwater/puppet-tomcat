@@ -19,7 +19,7 @@
 # Usage:
 #   class { 'tomcat::source': tomcat_version => "7.0.50" }
 #
-class tomcat::source($tomcat_version = "6.0.18") inherits tomcat::base {
+class tomcat::source($tomcat_version = "6.0.26") inherits tomcat::base {
 
   include tomcat::params
 
